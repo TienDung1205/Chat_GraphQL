@@ -105,3 +105,5 @@ Desktop.ini
 docker-compose.override.yml
 *.tar
 *.img
+
+/generated/prisma
