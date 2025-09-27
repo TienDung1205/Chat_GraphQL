@@ -1,6 +1,5 @@
 import {ApolloServer,gql} from "apollo-server";
 import crypto from "crypto";
-import { title } from "process";
 
 const users = [
   {
@@ -70,7 +69,9 @@ const resolvers = {
     Query: {
         users: () => users,
         user: (parent, args, context) => {
-            // console.log(args);
+            if(!context.userLoggedIn) {
+                throw new Error("You are not logged in");
+            }
             return users.find(item => item.id == args.id);
         }
     },
@@ -97,7 +98,10 @@ const resolvers = {
 const server = new ApolloServer(
     {
         typeDefs,
-        resolvers
+        resolvers,
+        context: {
+            userLoggedIn: true
+        }
     }
 );
 
