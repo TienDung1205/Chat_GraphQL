@@ -14,7 +14,7 @@ const typeDefs = gql`
     }
 
     type Mutation {
-
+        signupUser(userNew: UserInput!): User
     }
 
     type User {
