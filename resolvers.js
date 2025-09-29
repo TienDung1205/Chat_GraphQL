@@ -1,13 +1,29 @@
 import pc from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { AuthenticationError } from 'apollo-server';
+import { AuthenticationError, ForbiddenError } from 'apollo-server';
 import jwt from 'jsonwebtoken';
 
 const prisma = new pc.PrismaClient();
 
 const resolvers = {
     Query: {
-        
+        users: async (_, args, {userId}) => {
+            if (!userId) {
+                throw new ForbiddenError('Bạn cần đăng nhập để thực hiện hành động này');
+            }
+            const users = await prisma.user.findMany({
+                orderBy: {
+                    createdAt: 'desc'
+                },
+                where : {
+                    id : {
+                        not : userId
+                    }
+                }
+            });
+            
+            return users;
+        }
     },
     Mutation: {
         signupUser: async (_, { userNew }) => {
