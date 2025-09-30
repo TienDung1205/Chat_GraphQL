@@ -25,6 +25,8 @@ const resolvers = {
             return users;
         }
     },
+
+
     Mutation: {
         signupUser: async (_, { userNew }) => {
             const user = await prisma.user.findUnique({
@@ -62,6 +64,19 @@ const resolvers = {
 
             const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
             return { token };
+        },
+        createMessage: async (_, { receiverId, text }, { userId }) => {
+            if (!userId) {
+                throw new ForbiddenError('Bạn cần đăng nhập để thực hiện hành động này');
+            }
+            const message = await prisma.message.create({
+                data: {
+                    text,
+                    receiverId,
+                    senderId: userId
+                }
+            });
+            return message;
         }
     }
 };
