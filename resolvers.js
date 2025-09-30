@@ -23,6 +23,24 @@ const resolvers = {
             });
             
             return users;
+        },
+        messagesByUser: async (_, { receiverId }, { userId }) => {
+            if (!userId) {
+                throw new ForbiddenError('Bạn cần đăng nhập để thực hiện hành động này');
+            }
+            const messages = await prisma.message.findMany({
+                where: {
+                    OR: [
+                        { senderId: userId, receiverId: receiverId },
+                        { senderId: receiverId, receiverId: userId }
+                    ]
+                },
+                orderBy: { 
+                    createdAt: 'asc' 
+                }
+            });
+            
+            return messages;
         }
     },
 
