@@ -1,10 +1,35 @@
 import React,{useState, useRef} from 'react'
-import { Box,Stack,Typography,Button, TextField, Card} from '@mui/material'
+import { Box,Stack,Typography,Button, TextField, Card, CircularProgress, Alert} from '@mui/material'
+import { useMutation } from '@apollo/client/react';
+import { SIGNUP_USER,LOGIN_USER } from '../graphql/mutations';
 
 const AuthScreen = ({setloggedIn}) => {
   const [showLogin,setShowLogin] = useState(true)
   const [formData,setFormData] = useState({})
   const authForm = useRef(null)
+  const [signupUser,{data:signupData,loading:l1,error:e1}] = useMutation(SIGNUP_USER)
+  const [loginUser,{data:loginData,loading:l2,error:e2}] = useMutation(LOGIN_USER,{
+    onCompleted(data){
+      localStorage.setItem("jwt",data.signinUser.token)
+      setloggedIn(true)
+    }
+  })
+
+  if(l1 || l2){
+    return (
+    <Box 
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      height="100vh"
+    >
+      <Box textAlign="center">
+        <CircularProgress />
+        <Typography variant="h6">Đang xác thực...</Typography>
+      </Box> 
+    </Box>
+    )
+   }
 
   const handleChange = (e)=>{
 
@@ -16,7 +41,15 @@ const AuthScreen = ({setloggedIn}) => {
 
   const handleSubmit = (e)=>{
     e.preventDefault()
-    console.log(formData)
+    if(showLogin){
+      loginUser({variables:{userSignin:formData}})
+    }else{
+      signupUser({
+          variables:{
+          userNew:formData
+        }
+      })
+    }
   }
 
   return (
@@ -38,6 +71,9 @@ const AuthScreen = ({setloggedIn}) => {
           spacing={2}
           sx={{width:"400px"}}
         >
+          {signupData && <Alert severity="success">{signupData.signupUser.firstName} {signupData.signupUser.lastName} đã đăng ký</Alert> }
+          {e1 && <Alert severity="error">{e1.message}</Alert>}
+          {e2 && <Alert severity="error">{e2.message}</Alert>}
           <Typography variant="h5">{showLogin? "Đăng nhập": "Đăng ký"} ngay</Typography>
           {
             !showLogin &&
@@ -74,11 +110,11 @@ const AuthScreen = ({setloggedIn}) => {
             onChange={handleChange}
             required
           />
-          <Typography textAlign="center" variant="subtitle1" onClick={()=>{
+          <Typography textAlign="center" variant="subtitle1" class="usercard" onClick={()=>{
             setShowLogin((preValue)=>!preValue)
             setFormData({})
             authForm.current.reset()
-           }}> {showLogin? "Đăng ký?":"Đăng nhập?"}</Typography>
+           }}> {showLogin? "Bạn chưa có tài khoản? Đăng ký ngay":"Bạn đã có tài khoản? Đăng nhập ngay"}</Typography>
           <Button variant='outlined' type="submit">{showLogin? "Đăng nhập": "Đăng ký"}</Button>
         </Stack>
       </Card>

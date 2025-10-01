@@ -1,10 +1,13 @@
-import React from 'react'
+import React,{useState,useEffect} from 'react'
 import { useParams } from 'react-router-dom'
 import {Box, AppBar, Toolbar, Avatar, Typography, TextField} from '@mui/material'
 import MessageCard from './MessageCard'
 
 const ChatScreen = () => {
- const {id,name} = useParams()
+  const {id,name} = useParams()
+  const [messages,setMessages] = useState([])
+
+
   return (
     <Box
     flexGrow={1}
