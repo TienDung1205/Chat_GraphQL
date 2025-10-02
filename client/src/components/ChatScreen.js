@@ -24,11 +24,11 @@ const ChatScreen = () => {
 });
 
 const [sendMessage] = useMutation(SEND_MSG,{
-    onCompleted(data){
-      setMessages((prevMessages)=>[...prevMessages,data.createMessage])
-      setText("");
-      console.log("Message sent:", data);
-    }
+    // onCompleted(data){
+    //   setMessages((prevMessages)=>[...prevMessages,data.createMessage])
+    //   setText("");
+    //   console.log("Message sent:", data);
+    // }
   })
 
   const {data:subData} = useSubscription(MSG_SUB,{
@@ -40,6 +40,7 @@ const [sendMessage] = useMutation(SEND_MSG,{
           setMessages((prevMessages)=>[...prevMessages,data.messageAdded])
           setText("");
        }
+       console.log("Subscription data:", data);
     }
   })
 
