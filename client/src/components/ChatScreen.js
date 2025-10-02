@@ -6,11 +6,14 @@ import { useQuery, useMutation, useSubscription } from '@apollo/client';
 import { GET_MSG } from '../graphql/queries';
 import SendIcon from '@mui/icons-material/Send';
 import { SEND_MSG } from '../graphql/mutations';
+import { MSG_SUB } from '../graphql/subscriptions';
+import jwt_decode from 'jwt-decode'
 
 const ChatScreen = () => {
   const {id,name} = useParams()
   const [text,setText] = useState("")
   const [messages,setMessages] = useState([])
+  const {userId} = jwt_decode(localStorage.getItem('jwt'))
   
   const {data,loading,error} = useQuery(GET_MSG,{
   variables: { receiverId: +id },
@@ -20,14 +23,36 @@ const ChatScreen = () => {
   }
 });
 
-const [sendMessage] = useMutation(SEND_MSG, {
-  onCompleted(data) {
-    console.log("SEND_MSG onCompleted:", data);
-    setMessages(prev => [...prev, data.createMessage]);
-    setText('');  // reset input
-  }
-});
-console.log("Current messages:", messages);
+const [sendMessage] = useMutation(SEND_MSG,{
+    onCompleted(data){
+      setMessages((prevMessages)=>[...prevMessages,data.createMessage])
+      setText("");
+      console.log("Message sent:", data);
+    }
+  })
+
+  const {data:subData} = useSubscription(MSG_SUB,{
+    onSubscriptionData({subscriptionData:{data}}){
+       if(
+         (data.messageAdded.receiverId == +id && data.messageAdded.senderId == userId) ||
+         (data.messageAdded.receiverId == userId && data.messageAdded.senderId == +id) 
+       ){
+          setMessages((prevMessages)=>[...prevMessages,data.messageAdded])
+          setText("");
+       }
+    }
+  })
+
+  // const {data:subData} = useSubscription(MSG_SUB, {
+  //   onSubscriptionData({ subscriptionData }) {
+  //     console.log("Subscription data:", subscriptionData);
+  //   }
+  // });
+
+  // const {data:subData} = useSubscription(MSG_SUB)
+  // if(subData){
+  //   console.log("Subscription data:", subData);
+  // }
 
   return (
     <Box
