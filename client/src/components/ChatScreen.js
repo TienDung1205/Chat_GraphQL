@@ -18,7 +18,7 @@ const ChatScreen = () => {
   const {data,loading,error} = useQuery(GET_MSG,{
   variables: { receiverId: +id },
   onCompleted(data) {
-    console.log("GET_MSG onCompleted:", data);
+    // console.log("GET_MSG onCompleted:", data);
     setMessages(data.messagesByUser);
   }
 });
@@ -27,7 +27,6 @@ const [sendMessage] = useMutation(SEND_MSG,{
     // onCompleted(data){
     //   setMessages((prevMessages)=>[...prevMessages,data.createMessage])
     //   setText("");
-    //   console.log("Message sent:", data);
     // }
   })
 
@@ -43,17 +42,6 @@ const [sendMessage] = useMutation(SEND_MSG,{
        console.log("Subscription data:", data);
     }
   })
-
-  // const {data:subData} = useSubscription(MSG_SUB, {
-  //   onSubscriptionData({ subscriptionData }) {
-  //     console.log("Subscription data:", subscriptionData);
-  //   }
-  // });
-
-  // const {data:subData} = useSubscription(MSG_SUB)
-  // if(subData){
-  //   console.log("Subscription data:", subData);
-  // }
 
   return (
     <Box

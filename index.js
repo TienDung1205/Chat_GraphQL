@@ -4,7 +4,7 @@ import resolvers from './resolvers.js'
 import jwt from 'jsonwebtoken'
 import { WebSocketServer } from 'ws'
 import express from 'express'
-import { useServer } from 'graphql-ws/use/ws';
+import { useServer } from 'graphql-ws/lib/use/ws';
 import {makeExecutableSchema} from '@graphql-tools/schema'
 const port  = process.env.PORT || 4000
 

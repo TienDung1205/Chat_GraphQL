@@ -32,6 +32,7 @@ const SideBar = ({setloggedIn}) => {
             <LogoutIcon onClick={() => {
                 localStorage.removeItem("jwt");
                 setloggedIn(false);
+                window.location.href = "/";
             }}/>
         </Stack>
         <Divider />
