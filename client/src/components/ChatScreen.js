@@ -1,12 +1,33 @@
 import React,{useState,useEffect} from 'react'
-import { useParams } from 'react-router-dom'
-import {Box, AppBar, Toolbar, Avatar, Typography, TextField} from '@mui/material'
-import MessageCard from './MessageCard'
+import { useParams } from 'react-router-dom';
+import {AppBar,Toolbar,Avatar, Typography,Box, TextField, Stack} from '@mui/material'
+import MessageCard from './MessageCard';
+import { useQuery, useMutation, useSubscription } from '@apollo/client';
+import { GET_MSG } from '../graphql/queries';
+import SendIcon from '@mui/icons-material/Send';
+import { SEND_MSG } from '../graphql/mutations';
 
 const ChatScreen = () => {
   const {id,name} = useParams()
+  const [text,setText] = useState("")
   const [messages,setMessages] = useState([])
+  
+  const {data,loading,error} = useQuery(GET_MSG,{
+  variables: { receiverId: +id },
+  onCompleted(data) {
+    console.log("GET_MSG onCompleted:", data);
+    setMessages(data.messagesByUser);
+  }
+});
 
+const [sendMessage] = useMutation(SEND_MSG, {
+  onCompleted(data) {
+    console.log("SEND_MSG onCompleted:", data);
+    setMessages(prev => [...prev, data.createMessage]);
+    setText('');  // reset input
+  }
+});
+console.log("Current messages:", messages);
 
   return (
     <Box
@@ -24,17 +45,32 @@ const ChatScreen = () => {
         </Toolbar>
       </AppBar>
       <Box backgroundColor="#f5f5f5" height="80vh" padding="10px" sx={{overflowY:"auto"}}>
-        <MessageCard text="Hello Do" date ="1222" direction="start"/>
-        <MessageCard text="Hello Do" date ="1222" direction="end"/>
-        <MessageCard text="Hello Do" date ="1222" direction="start"/>
+        {
+          loading? <Typography variant="h6">Đang tải cuộc trò chuyện...</Typography>
+          : messages.map(msg=>{
+            return <MessageCard key={msg.createdAt} text={msg.text} date={msg.createdAt} direction={msg.receiverId == +id? "end":"start"} />
+          })
+        }
       </Box>
+      <Stack direction="row">
       <TextField
         placeholder="Nhập tin nhắn ..."
         variant="standard"
         fullWidth
         multiline
         rows={1.5}
+        value={text}
+        onChange={e=>setText(e.target.value)}
       />
+      <SendIcon fontSize="large" onClick={()=>{
+        sendMessage({
+          variables:{
+            receiverId: +id,
+            text:text
+          }
+        })
+      }} />
+      </Stack>
 
     </Box>
   )

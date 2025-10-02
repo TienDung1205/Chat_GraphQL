@@ -1,8 +1,8 @@
 import React from 'react'
 import {Box, Typography,Divider,Stack} from '@mui/material'
-import UserCard from './UserCard'
+import UserCard from './UserCard';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { useQuery } from '@apollo/client/react';
+import { useQuery } from '@apollo/client';
 import { GET_ALL_USERS } from '../graphql/queries';
 
 const SideBar = ({setloggedIn}) => {

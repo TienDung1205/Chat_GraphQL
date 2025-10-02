@@ -1,6 +1,6 @@
 import React,{useState, useRef} from 'react'
 import { Box,Stack,Typography,Button, TextField, Card, CircularProgress, Alert} from '@mui/material'
-import { useMutation } from '@apollo/client/react';
+import {useMutation} from '@apollo/client'
 import { SIGNUP_USER,LOGIN_USER } from '../graphql/mutations';
 
 const AuthScreen = ({setloggedIn}) => {
