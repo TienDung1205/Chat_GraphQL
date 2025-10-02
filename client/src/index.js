@@ -7,14 +7,28 @@ import {BrowserRouter} from 'react-router-dom';
 import {
   ApolloClient,
   InMemoryCache,
-  HttpLink 
+  HttpLink, 
+  createHttpLink
 } from "@apollo/client";
 import { ApolloProvider } from '@apollo/client/react';
 
+import { setContext } from '@apollo/client/link/context';
+
+const httpLink = createHttpLink({
+  uri: 'http://localhost:4000'
+});
+
+const authLink = setContext((_, { headers }) => {
+  return {
+    headers: {
+      ...headers,
+      authorization: localStorage.getItem('jwt')|| "" ,
+    }
+  }
+});
+
 const client = new ApolloClient({
-  link: new HttpLink({
-    uri: 'http://localhost:4000'
-  }),
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 
