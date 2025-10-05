@@ -11,7 +11,7 @@ const UserCard = ({item:{firstName,lastName,id}}) => {
       direction="row"
       spacing={2}
       sx={{py:1}}
-      onClick={()=>navigate(`/${id}/${firstName} ${lastName}`)}
+      onClick={() => window.location.href = `/${id}/${firstName} ${lastName}`}
     >
       <Avatar
         src={`https://api.dicebear.com/6.x/initials/svg?seed=${firstName}%20${lastName}`}

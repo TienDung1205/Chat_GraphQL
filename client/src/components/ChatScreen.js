@@ -39,7 +39,6 @@ const [sendMessage] = useMutation(SEND_MSG,{
           setMessages((prevMessages)=>[...prevMessages,data.messageAdded])
           setText("");
        }
-       console.log("Subscription data:", data);
     }
   })
 
@@ -66,7 +65,7 @@ const [sendMessage] = useMutation(SEND_MSG,{
           })
         }
       </Box>
-      <Stack direction="row">
+      <Stack direction="row" alignItems="center">
       <TextField
         placeholder="Nhập tin nhắn ..."
         variant="standard"
@@ -74,16 +73,37 @@ const [sendMessage] = useMutation(SEND_MSG,{
         multiline
         rows={1.5}
         value={text}
-        onChange={e=>setText(e.target.value)}
-      />
-      <SendIcon fontSize="large" onClick={()=>{
-        sendMessage({
-          variables:{
-            receiverId: +id,
-            text:text
+        onChange={e => setText(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();  // ngăn xuống dòng
+            if(text.trim() !== '') {
+              sendMessage({
+                variables: {
+                  receiverId: +id,
+                  text: text.trim()
+                }
+              });
+              setText(''); // reset input sau khi gửi
+            }
           }
-        })
-      }} />
+        }}
+      />
+      <SendIcon
+        fontSize="large"
+        onClick={() => {
+          if(text.trim() !== '') {
+            sendMessage({
+              variables: {
+                receiverId: +id,
+                text: text.trim()
+              }
+            });
+            setText(''); // reset input sau khi gửi
+          }
+        }}
+        style={{ cursor: 'pointer' }} // thêm con trỏ chuột cho dễ nhận biết
+      />
       </Stack>
 
     </Box>
